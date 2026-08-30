@@ -1,0 +1,149 @@
+{
+ "4TZK": {
+  "bytes": 1343175,
+  "title": "Crystal structure of Mycobacterium tuberculosis enoyl reductase (INHA) complexed WITH 1-CY",
+  "n_atom": 15996,
+  "chains": [
+   "A"
+  ],
+  "het": {
+   "NAD": 280,
+   "641": 172
+  },
+  "resolution_A": 1.62,
+  "note": "SELECTED RECEPTOR: highest resolution (1.62 A), NAD present, single chain, drug-like inhibitor 641"
+ },
+ "2NSD": {
+  "bytes": 170379,
+  "title": "Enoyl acyl carrier protein reductase InhA in complex with N (4-methylbenzoyl)-4-benzylpipe",
+  "n_atom": 1996,
+  "chains": [
+   "A"
+  ],
+  "het": {
+   "NAD": 44,
+   "4PI": 22
+  },
+  "resolution_A": 1.9
+ },
+ "4OXY": {
+  "bytes": 668300,
+  "title": "Substrate-binding loop movement with inhibitor PT10 in the tetrameric Mycobacterium tuberc",
+  "n_atom": 7663,
+  "chains": [
+   "A",
+   "B",
+   "C",
+   "D"
+  ],
+  "het": {
+   "HOH": 189,
+   "NAD": 176,
+   "1TN": 85
+  },
+  "resolution_A": 2.3501
+ },
+ "5COQ": {
+  "bytes": 691345,
+  "title": "The effect of valine to alanine mutation on InhA enzyme crystallization pattern and substr",
+  "n_atom": 7807,
+  "chains": [
+   "A",
+   "B",
+   "C",
+   "D"
+  ],
+  "het": {
+   "HOH": 328,
+   "NAD": 176,
+   "TCU": 84,
+   "NA": 1
+  },
+  "resolution_A": 2.3,
+  "note": "V203A engineered mutant - excluded as receptor"
+ },
+ "1ZID": {
+  "bytes": 673775,
+  "title": "LONG FATTY ACID CHAIN ENOYL-ACP REDUCTASE (INHA) IN COMPLEX WITH AN ISONICOTINIC-ACYL-NADH",
+  "n_atom": 7976,
+  "chains": [
+   "A"
+  ],
+  "het": {
+   "ZID": 208
+  },
+  "resolution_A": 2.7,
+  "note": "INH-NAD covalent adduct (ZID), no free NAD - excluded as receptor"
+ },
+ "4OIM": {
+  "bytes": 670051,
+  "title": "Crystal structure of Mycobacterium tuberculosis InhA in complex with inhibitor PT119 in 2.",
+  "n_atom": 7692,
+  "chains": [
+   "A"
+  ],
+  "het": {
+   "NAD": 176,
+   "ACT": 176,
+   "JUS": 88
+  },
+  "resolution_A": 1.848
+ },
+ "2AQ8": {
+  "bytes": 669579,
+  "title": "Crystal structure of wild-type of Enoyl-ACP(CoA) reductase from Mycobacterium tuberculosis",
+  "n_atom": 7936,
+  "chains": [
+   "A"
+  ],
+  "het": {
+   "NAI": 176,
+   "LYS": 20
+  },
+  "resolution_A": 1.92
+ },
+ "3FNG": {
+  "bytes": 678509,
+  "title": "Crystal structure of InhA bound to triclosan derivative",
+  "n_atom": 7976,
+  "chains": [
+   "A"
+  ],
+  "het": {
+   "NAD": 176,
+   "JPL": 92
+  },
+  "resolution_A": 1.97
+ },
+ "2B35": {
+  "bytes": 637925,
+  "title": "Crystal structure of Mycobacterium tuberculosis enoyl reductase (InhA) inhibited by triclo",
+  "n_atom": 7498,
+  "chains": [
+   "A",
+   "B"
+  ],
+  "het": {
+   "NAD": 176,
+   "TCL": 68
+  },
+  "resolution_A": 2.3
+ },
+ "4COD": {
+  "bytes": 713101,
+  "title": "Encoded library technology as a source of hits for the discovery and lead optimization of ",
+  "n_atom": 7984,
+  "chains": [
+   "B",
+   "D",
+   "F",
+   "H"
+  ],
+  "het": {
+   "HOH": 384,
+   "NAD": 176,
+   "KV1": 128
+  },
+  "resolution_A": 2.4
+ }
+}

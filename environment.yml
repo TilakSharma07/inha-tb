@@ -1,0 +1,19 @@
+name: inha-tb
+channels: [conda-forge, bioconda]
+dependencies:
+  - python=3.11
+  - numpy
+  - pandas
+  - scipy
+  - scikit-learn
+  - matplotlib
+  - rdkit
+  - openbabel
+  - requests
+  - pip
+  - pip:
+      - vina
+      - meeko
+      - xgboost
+      - prolif
+      - MDAnalysis

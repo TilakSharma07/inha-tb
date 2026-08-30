@@ -1,0 +1,219 @@
+{
+ "cascade": [
+  [
+   "ChEMBL records retrieved",
+   4450
+  ],
+  [
+   "no data-validity flag",
+   4228
+  ],
+  [
+   "exact relation (=)",
+   3386
+  ],
+  [
+   "potency endpoint",
+   2521
+  ],
+  [
+   "usable units",
+   2521
+  ],
+  [
+   "has pChEMBL value",
+   2107
+  ],
+  [
+   "pChEMBL in [3,12]",
+   2107
+  ],
+  [
+   "unique molecules\n(aggregated)",
+   1417
+  ]
+ ],
+ "records_curated": 2107,
+ "molecules_unique": 1417,
+ "rows_mol_by_dataset": 1452,
+ "n_inha": 355,
+ "actives_inha": 162,
+ "n_wc": 1097,
+ "actives_wc": 283,
+ "n_replicated": 324,
+ "noise_floor_sd": 0.232,
+ "translation": {
+  "spearman_rho": 0.91,
+  "n": 35,
+  "p_value": 3.636790952418192e-14
+ },
+ "qsar": {
+  "InhA_enzyme": {
+   "best_model": "XGBoost",
+   "scaffold_roc_auc": 0.837,
+   "random_roc_auc": 0.921,
+   "scaffold_pr_auc": 0.894,
+   "scaffold_mcc": 0.503,
+   "n_train": 267,
+   "n_test": 88,
+   "test_actives": 54,
+   "ef10": 1.63,
+   "ef_max": 1.63,
+   "n_scaffolds": 152,
+   "leaked_scaffolds_random": 29
+  },
+  "Mtb_whole_cell": {
+   "best_model": "RandomForest",
+   "scaffold_roc_auc": 0.841,
+   "random_roc_auc": 0.911,
+   "scaffold_pr_auc": 0.617,
+   "scaffold_mcc": 0.512,
+   "n_train": 823,
+   "n_test": 274,
+   "test_actives": 56,
+   "ef10": 3.81,
+   "ef_max": 4.89,
+   "n_scaffolds": 444,
+   "leaked_scaffolds_random": 89
+  }
+ },
+ "inflation": {
+  "min": 0.069,
+  "max": 0.119,
+  "median": 0.08
+ },
+ "applicability_domain": {
+  "near_roc_auc": [
+   0.9,
+   0.873,
+   0.933,
+   0.894
+  ],
+  "far_roc_auc": [
+   0.605,
+   0.475
+  ],
+  "n_bins_too_small": 2,
+  "table": [
+   {
+    "dataset": "InhA_enzyme",
+    "tanimoto_bin": "0.00-0.25",
+    "n": 9,
+    "actives": 4,
+    "ROC_AUC": 0.45,
+    "mean_abs_err": 0.509
+   },
+   {
+    "dataset": "InhA_enzyme",
+    "tanimoto_bin": "0.25-0.35",
+    "n": 5,
+    "actives": 3,
+    "ROC_AUC": 1.0,
+    "mean_abs_err": 0.406
+   },
+   {
+    "dataset": "InhA_enzyme",
+    "tanimoto_bin": "0.35-0.50",
+    "n": 13,
+    "actives": 8,
+    "ROC_AUC": 0.9,
+    "mean_abs_err": 0.419
+   },
+   {
+    "dataset": "InhA_enzyme",
+    "tanimoto_bin": "0.50-1.01",
+    "n": 61,
+    "actives": 39,
+    "ROC_AUC": 0.873,
+    "mean_abs_err": 0.253
+   },
+   {
+    "dataset": "Mtb_whole_cell",
+    "tanimoto_bin": "0.00-0.25",
+    "n": 40,
+    "actives": 8,
+    "ROC_AUC": 0.605,
+    "mean_abs_err": 0.433
+   },
+   {
+    "dataset": "Mtb_whole_cell",
+    "tanimoto_bin": "0.25-0.35",
+    "n": 34,
+    "actives": 4,
+    "ROC_AUC": 0.475,
+    "mean_abs_err": 0.426
+   },
+   {
+    "dataset": "Mtb_whole_cell",
+    "tanimoto_bin": "0.35-0.50",
+    "n": 28,
+    "actives": 3,
+    "ROC_AUC": 0.933,
+    "mean_abs_err": 0.358
+   },
+   {
+    "dataset": "Mtb_whole_cell",
+    "tanimoto_bin": "0.50-1.01",
+    "n": 172,
+    "actives": 41,
+    "ROC_AUC": 0.894,
+    "mean_abs_err": 0.286
+   }
+  ]
+ },
+ "docking": {
+  "receptor": "4TZK",
+  "rmsd_top": 0.23,
+  "rmsd_best": 0.23,
+  "crystal_score": -9.38,
+  "redock_top": -9.78,
+  "box_size": [
+   22.5,
+   22.0,
+   22.0
+  ],
+  "box_center": [
+   8.79,
+   32.47,
+   60.41
+  ],
+  "library_n": 647,
+  "library_inha": 347,
+  "library_wc": 300,
+  "library_actives": 305,
+  "library_mw_max": 596.8,
+  "library_rotb_max": 12,
+  "excluded_max_mw": 1876.0,
+  "excluded_max_rotb": 62,
+  "n_excluded": 71,
+  "library_balance": {
+   "InhA_enzyme": {
+    "n": 347,
+    "actives": 155
+   },
+   "Mtb_whole_cell": {
+    "n": 300,
+    "actives": 150
+   }
+  },
+  "n_scored": 640,
+  "score_vs_potency_rho": -0.184,
+  "score_vs_potency_p": 2.9269789722909635e-06,
+  "InhA_enzyme_roc_auc": 0.651,
+  "InhA_enzyme_ef5": 1.34,
+  "InhA_enzyme_ef_max": 2.28,
+  "InhA_enzyme_rho": -0.233,
+  "Mtb_whole_cell_roc_auc": 0.581,
+  "Mtb_whole_cell_ef5": 0.72,
+  "Mtb_whole_cell_ef_max": 2.01,
+  "Mtb_whole_cell_rho": -0.136,
+  "InhA_enzyme_heldout_n": 82,
+  "InhA_enzyme_heldout_dock_auc": 0.588,
+  "InhA_enzyme_heldout_qsar_auc": 0.834,
+  "Mtb_whole_cell_heldout_n": 140,
+  "Mtb_whole_cell_heldout_dock_auc": 0.633,
+  "Mtb_whole_cell_heldout_qsar_auc": 0.839
+ },
+ "descriptors_n": 17,
+ "fingerprint": "Morgan r=2, 2048 bits"
+}

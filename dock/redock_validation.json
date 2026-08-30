@@ -1,0 +1,37 @@
+{
+ "rmsd_top": 0.23,
+ "rmsd_best": 0.23,
+ "rmsd_all": [
+  0.23,
+  0.24,
+  3.81,
+  3.84,
+  5.23,
+  4.74,
+  4.78,
+  5.05,
+  5.17,
+  5.41,
+  5.77,
+  2.19,
+  5.31,
+  6.2,
+  5.89,
+  6.24,
+  2.18,
+  3.7,
+  8.66,
+  8.75
+ ],
+ "centroid_shift": 0.1,
+ "crystal_score": -9.38,
+ "minimised": -9.71,
+ "redock_top5": [
+  -9.78,
+  -9.52,
+  -9.1,
+  -8.88,
+  -8.86
+ ],
+ "method": "element-constrained optimal assignment (Hungarian), heavy atoms, absolute coordinates"
+}

@@ -1,0 +1,19 @@
+{
+ "center": [
+  8.793,
+  32.467,
+  60.41
+ ],
+ "size": [
+  22.5,
+  22.0,
+  22.0
+ ],
+ "ref_ligand_resname": "641",
+ "receptor_pdb": "4TZK",
+ "resolution_A": 1.62,
+ "n_receptor_atoms": 4069,
+ "atoms_in_box": 911,
+ "min_lig_nad_A": 2.2,
+ "cofactor": "NAD retained - InhA is NADH-dependent; inhibitor stacks on nicotinamide"
+}

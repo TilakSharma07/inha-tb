@@ -1,0 +1,112 @@
+[
+ {
+  "resi": 96,
+  "resn": "GLY",
+  "min_dist": 2.78
+ },
+ {
+  "resi": 97,
+  "resn": "PHE",
+  "min_dist": 2.47
+ },
+ {
+  "resi": 98,
+  "resn": "MET",
+  "min_dist": 2.93
+ },
+ {
+  "resi": 103,
+  "resn": "MET",
+  "min_dist": 2.58
+ },
+ {
+  "resi": 104,
+  "resn": "GLY",
+  "min_dist": 3.26
+ },
+ {
+  "resi": 149,
+  "resn": "PHE",
+  "min_dist": 2.86
+ },
+ {
+  "resi": 155,
+  "resn": "MET",
+  "min_dist": 3.25
+ },
+ {
+  "resi": 156,
+  "resn": "PRO",
+  "min_dist": 2.61
+ },
+ {
+  "resi": 157,
+  "resn": "ALA",
+  "min_dist": 1.96
+ },
+ {
+  "resi": 158,
+  "resn": "TYR",
+  "min_dist": 1.81
+ },
+ {
+  "resi": 161,
+  "resn": "MET",
+  "min_dist": 2.52
+ },
+ {
+  "resi": 165,
+  "resn": "LYS",
+  "min_dist": 3.35
+ },
+ {
+  "resi": 193,
+  "resn": "PRO",
+  "min_dist": 4.49
+ },
+ {
+  "resi": 194,
+  "resn": "ILE",
+  "min_dist": 4.38
+ },
+ {
+  "resi": 196,
+  "resn": "THR",
+  "min_dist": 4.03
+ },
+ {
+  "resi": 198,
+  "resn": "ALA",
+  "min_dist": 4.21
+ },
+ {
+  "resi": 199,
+  "resn": "MET",
+  "min_dist": 2.9
+ },
+ {
+  "resi": 202,
+  "resn": "ILE",
+  "min_dist": 3.1
+ },
+ {
+  "resi": 207,
+  "resn": "LEU",
+  "min_dist": 3.73
+ },
+ {
+  "resi": 211,
+  "resn": "ALA",
+  "min_dist": 3.8
+ },
+ {
+  "resi": 215,
+  "resn": "ILE",
+  "min_dist": 2.58
+ },
+ {
+  "resi": 218,
+  "resn": "LEU",
+  "min_dist": 2.93
+ }
+]

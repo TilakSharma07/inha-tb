@@ -1,0 +1,37 @@
+{
+ "cascade": [
+  [
+   "ChEMBL records retrieved",
+   4450
+  ],
+  [
+   "no data-validity flag",
+   4228
+  ],
+  [
+   "exact relation (=)",
+   3386
+  ],
+  [
+   "potency endpoint",
+   2521
+  ],
+  [
+   "usable units",
+   2521
+  ],
+  [
+   "has pChEMBL value",
+   2107
+  ],
+  [
+   "pChEMBL in [3,12]",
+   2107
+  ],
+  [
+   "unique molecules\n(aggregated)",
+   1417
+  ]
+ ],
+ "unit": "unique standardised SMILES"
+}
