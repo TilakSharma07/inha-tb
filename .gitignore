@@ -13,3 +13,4 @@ update_repo.sh
 push_determinism.sh
 push_step17.sh
 push_repro.sh
+github_check.sh
