@@ -185,6 +185,12 @@ gap is supported, not proven.
 - **Assay heterogeneity.** ChEMBL MICs come from many labs and protocols; the retained
   inter-replicate spread quantifies but does not remove this.
 
+## License
+
+MIT — see [LICENSE](LICENSE). The curated bioactivity data derives from ChEMBL
+(CC BY-SA 3.0) and the receptor from PDB 4TZK; cite those sources, not this repo,
+for the underlying measurements.
+
 ## Reproduce
 
 ```bash
