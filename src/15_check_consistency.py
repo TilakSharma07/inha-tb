@@ -69,6 +69,16 @@ def main():
         ("screen AUC InhA / METHODS", M,
          rf"\| InhA enzyme \| \d+ \| \d+ \| {N} \| -?[\d.]+ \|",
                                        f"{dk['InhA_enzyme_roc_auc']:.2f}"),
+        # Leakage decomposition (src/21). The README restates saved values; a rerun
+        # that changes them must not leave the prose behind. The permutation p-value is
+        # deliberately NOT checked - it moves in the last digit between runs - but the
+        # sentence stating it is not significant IS checked, below the loop.
+        ("leakage combos / README",  R, rf"\*\*{N}/6\*\*\s+model", "6"),
+        ("leakage median / README",  R, rf"median \+{N}\s+ROC-AUC", "0.099"),
+        ("leakage residual / README", R, r"median residual\s+([+-][\d.]+)", "-0.006"),
+        ("leakage residual / METHODS", M, r"median residual\s+([+-][\d.]+)", "-0.006"),
+        ("leakage median / METHODS",  M, rf"median\s+\+{N}\s+ROC-AUC", "0.099"),
+        ("leakage combos / METHODS",  M, rf"in\s+{N}/6 model", "6"),
     ]
     bad = []
     for label, text, pat, want in checks:
@@ -90,6 +100,12 @@ def main():
 
     for b in bad:
         print(f"FAIL  {b}")
+    # The README must keep saying the effect is not significant while facts.json says the
+    # direction is consistent; those two must not drift apart into an overclaim.
+    if not re.search(r"not significant at the\s+\**conventional threshold",
+                     R.replace("**", "")):
+        bad.append("README no longer states the leakage effect is not significant")
+
     if bad:
         sys.exit(f"{len(bad)} consistency failure(s)")
     print(f"consistency: {len(checks)} headline numbers agree across README, "

@@ -214,6 +214,24 @@
   "Mtb_whole_cell_heldout_dock_auc": 0.633,
   "Mtb_whole_cell_heldout_qsar_auc": 0.839
  },
+ "leakage": {
+  "n_combinations": 6,
+  "n_positive": 6,
+  "median_delta": 0.099,
+  "median_residual": -0.006,
+  "InhA_enzyme_scaffold_test_auc": 0.83,
+  "InhA_enzyme_scaffold_test_n": 88,
+  "InhA_enzyme_random_test_singleton_auc": 0.9,
+  "InhA_enzyme_random_test_singleton_n": 22,
+  "InhA_enzyme_random_test_has_analogues_auc": 0.95,
+  "InhA_enzyme_random_test_has_analogues_n": 66,
+  "Mtb_whole_cell_scaffold_test_auc": 0.84,
+  "Mtb_whole_cell_scaffold_test_n": 274,
+  "Mtb_whole_cell_random_test_singleton_auc": 0.79,
+  "Mtb_whole_cell_random_test_singleton_n": 65,
+  "Mtb_whole_cell_random_test_has_analogues_auc": 0.93,
+  "Mtb_whole_cell_random_test_has_analogues_n": 209
+ },
  "descriptors_n": 17,
  "fingerprint": "Morgan r=2, 2048 bits"
 }

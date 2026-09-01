@@ -99,6 +99,64 @@ def main():
     TBL_STRUCT = md_table(ST, fmt={"resolution": f2})
     TBL_RESULTS = md_table(piv, fmt={"scaffold": f3, "random": f3, "inflation": fp3})
     TBL_AD = md_table(ADt, fmt={"ROC_AUC": f3, "mean abs. err": f3})
+    LK = f"{D}/data/leakage_decomposition.csv"
+    LKD = pd.read_csv(LK) if os.path.exists(LK) else None
+    if LKD is not None:
+        LKg = LKD.dropna(subset=["delta_leakage"])
+        LKrf = LKD[LKD.model == "RandomForest"].set_index(["dataset", "group"])
+        SEC_LEAK = f"""## 6. Decomposing the generalisation gap
+
+The scaffold split assigns groups largest-first to training (section 5), so the
+scaffold-split test set contains **only singleton scaffolds** - median scaffold-group size
+11.5 in train against exactly 1 in test on InhA, 8.0 against 1 on whole-cell. The
+two-split comparison therefore confounds two things: scaffold novelty, and any intrinsic
+difficulty of molecules appearing once in the dataset.
+
+`src/21_leakage_decomposition.py` separates them inside the **random** split, where the
+training set is fixed and the model is a single fitted model. Its test set is partitioned on
+whether the molecule's Murcko scaffold occurs more than once anywhere in the dataset:
+*has analogues* (scaffold-mates in training, so leakage is possible) against *singleton*
+(no scaffold-mate anywhere, so novelty is isolated from leakage). Under the leakage
+explanation the analogue subset scores higher and the singleton subset lands near the
+scaffold-split value; under "singletons are simply harder" both random-split subsets score
+alike.
+
+| random-split test subset | InhA | *M. tb* whole-cell |
+|---|---|---|
+| analogues present in training | {LKrf.loc[('InhA_enzyme','random_test_has_analogues'),'roc_auc']:.2f} | {LKrf.loc[('Mtb_whole_cell','random_test_has_analogues'),'roc_auc']:.2f} |
+| singleton scaffold | {LKrf.loc[('InhA_enzyme','random_test_singleton'),'roc_auc']:.2f} | {LKrf.loc[('Mtb_whole_cell','random_test_singleton'),'roc_auc']:.2f} |
+| *scaffold*-split test set, for reference | {LKrf.loc[('InhA_enzyme','scaffold_test'),'roc_auc']:.2f} | {LKrf.loc[('Mtb_whole_cell','scaffold_test'),'roc_auc']:.2f} |
+
+**Inference.** Differences carry 4000-replicate percentile bootstrap CIs, each subset
+resampled independently (they are disjoint molecule sets). Significance uses a 4000-draw
+permutation test holding label-prediction pairs intact and shuffling only **group
+membership**, so the null is that group carries no information about ranking quality;
+permuting labels would test whether the model ranks at all, a different and already-answered
+question. ROC-AUC is computed in Mann-Whitney mid-rank form, verified equal to
+`sklearn.metrics.roc_auc_score` to 2e-16 including on tied scores, which is what makes
+168,000 resampled evaluations run in seconds.
+
+**Result and its limits.** The analogue subset scores higher in
+{int((LKg.delta_leakage > 0).sum())}/{len(LKg)} model x dataset combinations, median
++{LKg.delta_leakage.median():.3f} ROC-AUC, and the residual between the random-split
+singleton subset and the scaffold-split test set has median residual
+{LKg.delta_residual.median():+.3f} - the pattern leakage predicts. The effect size is
+**not** established: the singleton arm holds
+{int(LKrf.loc[('InhA_enzyme','random_test_singleton'),'n'])} molecules on InhA and
+{int(LKrf.loc[('Mtb_whole_cell','random_test_singleton'),'n'])} on whole-cell (9 actives),
+its own CI reaches 0.48 wide, every per-combination difference CI crosses zero, and pooling
+both datasets for the random forest - after converting each dataset's predictions to
+within-dataset percentile ranks, so a calibration shift cannot masquerade as signal - gives
++0.065 [-0.025, +0.169], permutation *p* = 0.084. Two of six individual tests reach
+*p* < 0.05, both on whole-cell. The three models within a dataset share a test set and are
+not independent replicates, so a {int((LKg.delta_leakage > 0).sum())}/{len(LKg)} sign test
+would overstate the evidence; there are two independent replicates, the two datasets. The
+reported scaffold-split numbers do not depend on this test - it addresses *why* the gap
+exists, not whether it does.
+
+"""
+    else:
+        SEC_LEAK = ""
     PERF = json.load(open(f"{D}/data/docking_performance.json"))
     TBL_RES = md_table(pd.DataFrame(
         [{"dataset": DS_LABEL.get(k, k), "n": v["n"], "actives": v["actives"],
@@ -274,7 +332,7 @@ A random split overstates ROC-AUC by
 {F['inflation']['median']:.2f}). Every result quoted outside this table is the scaffold-split
 number.
 
-## 6. Applicability domain
+{SEC_LEAK}## 7. Applicability domain
 
 Test compounds (scaffold split, random forest) were binned by maximum Tanimoto similarity to
 any training compound. Bins holding fewer than 10 compounds are flagged: a ROC-AUC computed
@@ -290,7 +348,7 @@ so the useful reading is the split between the two low-similarity bins and every
 not a smooth curve. Predictions on novel chemotypes should not be trusted, and this table is
 the reason.
 
-## 7. Docking screen
+## 8. Docking screen
 
 Library: {dk['library_n']} molecules ({dk['library_inha']} with InhA enzyme potency,
 {dk['library_wc']} whole-cell), of which {dk['library_actives']} are measured actives at
@@ -319,7 +377,7 @@ properties only, never on the score, and is applied before docking, so it cannot
 the outcome. Selection and the single-conformer
 limitation are implemented in `src/06_build_library.py`.
 
-## 8. What the docking screen shows
+## 9. What the docking screen shows
 
 {TBL_RES}
 
@@ -352,7 +410,7 @@ performance of any list ranked by raw score. A size-corrected score, ensemble do
 the {len(SM)} InhA structures screened, or rescoring the retained poses would each test
 one of these; none is done here.
 
-## 9. What this pipeline does not claim
+## 10. What this pipeline does not claim
 
 - **Vina scores are not affinities.** The scoring function was parameterised to reproduce
   binding geometry, not to rank potency. Reported use is triage and prioritisation only.

@@ -131,6 +131,7 @@ def main():
     fig.tight_layout(w_pad=2.2)
     fig.savefig(OUT, dpi=300, bbox_inches="tight")
     print(f"wrote {OUT.relative_to(D)} (worst threshold-metric drift {worst:.4f})")
+    return fig
 
 
 if __name__ == "__main__":

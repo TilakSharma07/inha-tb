@@ -80,6 +80,23 @@ def main():
     else:
         print("figure3 skipped (data/docking_joined.csv absent)")
 
+    # Figures 4 and 5 are drawn from committed tables by their own generators. They were
+    # outside this gate when first written - the defect this step exists to prevent - so
+    # they are wired in explicitly rather than left to a naming convention.
+    for step, name, need in (("19_figure_reproducibility", "figure4",
+                              "data/reproducibility_drift.csv"),
+                             ("22_figure_leakage", "figure5",
+                              "data/leakage_decomposition.csv")):
+        if os.path.exists(f"{D}/{need}"):
+            nsx = runpy.run_path(f"{SRC}/{step}.py", run_name="not_main")
+            f = nsx["main"]()
+            if f is None:
+                bad.append(f"{name}: generator returned no figure to check")
+            else:
+                figs.append((name, f))
+        else:
+            print(f"{name} skipped ({need} absent)")
+
     for name, fig in figs:
         errs = check(fig, name)
         print(f"{name}: {len(errs)} defect(s)")

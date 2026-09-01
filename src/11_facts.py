@@ -7,7 +7,8 @@ FACTS markers in README.md.
 
 Run it after 04 (QSAR) and, once docking has finished, after 09 (docking analysis).
 """
-import json, os, re
+import json
+import os, os, re
 import numpy as np, pandas as pd
 from scipy import stats
 
@@ -115,6 +116,21 @@ def facts():
             f["docking"][f"{ds}_heldout_n"] = int(d["docking"]["n"])
             f["docking"][f"{ds}_heldout_dock_auc"] = round(float(d["docking"]["roc_auc"]), 3)
             f["docking"][f"{ds}_heldout_qsar_auc"] = round(float(d["qsar"]["roc_auc"]), 3)
+    lk = f"{D}/data/leakage_decomposition.csv"
+    if os.path.exists(lk):
+        L = pd.read_csv(lk)
+        g = L.dropna(subset=["delta_leakage"])
+        rf = L[L.model == "RandomForest"]
+        f["leakage"] = {
+            "n_combinations": int(len(g)),
+            "n_positive": int((g.delta_leakage > 0).sum()),
+            "median_delta": round(float(g.delta_leakage.median()), 3),
+            "median_residual": round(float(g.delta_residual.median()), 3),
+        }
+        for _, r in rf.iterrows():
+            f["leakage"][f"{r.dataset}_{r.group}_auc"] = round(float(r.roc_auc), 2)
+            f["leakage"][f"{r.dataset}_{r.group}_n"] = int(r.n)
+
     f["descriptors_n"] = len(SP["descriptor_cols"])
     f["fingerprint"] = f"Morgan r={SP['radius']}, {SP['nbits']} bits"
     return f

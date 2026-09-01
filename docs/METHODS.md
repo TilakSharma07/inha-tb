@@ -174,7 +174,57 @@ A random split overstates ROC-AUC by
 0.08). Every result quoted outside this table is the scaffold-split
 number.
 
-## 6. Applicability domain
+## 6. Decomposing the generalisation gap
+
+The scaffold split assigns groups largest-first to training (section 5), so the
+scaffold-split test set contains **only singleton scaffolds** - median scaffold-group size
+11.5 in train against exactly 1 in test on InhA, 8.0 against 1 on whole-cell. The
+two-split comparison therefore confounds two things: scaffold novelty, and any intrinsic
+difficulty of molecules appearing once in the dataset.
+
+`src/21_leakage_decomposition.py` separates them inside the **random** split, where the
+training set is fixed and the model is a single fitted model. Its test set is partitioned on
+whether the molecule's Murcko scaffold occurs more than once anywhere in the dataset:
+*has analogues* (scaffold-mates in training, so leakage is possible) against *singleton*
+(no scaffold-mate anywhere, so novelty is isolated from leakage). Under the leakage
+explanation the analogue subset scores higher and the singleton subset lands near the
+scaffold-split value; under "singletons are simply harder" both random-split subsets score
+alike.
+
+| random-split test subset | InhA | *M. tb* whole-cell |
+|---|---|---|
+| analogues present in training | 0.95 | 0.93 |
+| singleton scaffold | 0.90 | 0.79 |
+| *scaffold*-split test set, for reference | 0.83 | 0.84 |
+
+**Inference.** Differences carry 4000-replicate percentile bootstrap CIs, each subset
+resampled independently (they are disjoint molecule sets). Significance uses a 4000-draw
+permutation test holding label-prediction pairs intact and shuffling only **group
+membership**, so the null is that group carries no information about ranking quality;
+permuting labels would test whether the model ranks at all, a different and already-answered
+question. ROC-AUC is computed in Mann-Whitney mid-rank form, verified equal to
+`sklearn.metrics.roc_auc_score` to 2e-16 including on tied scores, which is what makes
+168,000 resampled evaluations run in seconds.
+
+**Result and its limits.** The analogue subset scores higher in
+6/6 model x dataset combinations, median
++0.099 ROC-AUC, and the residual between the random-split
+singleton subset and the scaffold-split test set has median residual
+-0.006 - the pattern leakage predicts. The effect size is
+**not** established: the singleton arm holds
+22 molecules on InhA and
+65 on whole-cell (9 actives),
+its own CI reaches 0.48 wide, every per-combination difference CI crosses zero, and pooling
+both datasets for the random forest - after converting each dataset's predictions to
+within-dataset percentile ranks, so a calibration shift cannot masquerade as signal - gives
++0.065 [-0.025, +0.169], permutation *p* = 0.084. Two of six individual tests reach
+*p* < 0.05, both on whole-cell. The three models within a dataset share a test set and are
+not independent replicates, so a 6/6 sign test
+would overstate the evidence; there are two independent replicates, the two datasets. The
+reported scaffold-split numbers do not depend on this test - it addresses *why* the gap
+exists, not whether it does.
+
+## 7. Applicability domain
 
 Test compounds (scaffold split, random forest) were binned by maximum Tanimoto similarity to
 any training compound. Bins holding fewer than 10 compounds are flagged: a ROC-AUC computed
@@ -199,7 +249,7 @@ so the useful reading is the split between the two low-similarity bins and every
 not a smooth curve. Predictions on novel chemotypes should not be trusted, and this table is
 the reason.
 
-## 7. Docking screen
+## 8. Docking screen
 
 Library: 647 molecules (347 with InhA enzyme potency,
 300 whole-cell), of which 305 are measured actives at
@@ -231,7 +281,7 @@ properties only, never on the score, and is applied before docking, so it cannot
 the outcome. Selection and the single-conformer
 limitation are implemented in `src/06_build_library.py`.
 
-## 8. What the docking screen shows
+## 9. What the docking screen shows
 
 | dataset | n | actives | ROC-AUC | Spearman ρ | EF 5 % | ceiling |
 |---|---|---|---|---|---|---|
@@ -270,7 +320,7 @@ performance of any list ranked by raw score. A size-corrected score, ensemble do
 the 10 InhA structures screened, or rescoring the retained poses would each test
 one of these; none is done here.
 
-## 9. What this pipeline does not claim
+## 10. What this pipeline does not claim
 
 - **Vina scores are not affinities.** The scoring function was parameterised to reproduce
   binding geometry, not to rank potency. Reported use is triage and prioritisation only.

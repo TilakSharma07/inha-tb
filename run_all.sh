@@ -16,11 +16,17 @@ python src/07_redock_validate.py     # CONTROL: redock the crystal ligand, asser
 python src/08_dock_library.py        # dock the library (parallel; slow)
 python src/09_analyse_docking.py     # docking score vs measured potency
 python src/10_figures.py             # regenerate figures 1-2 from saved tables
+python src/21_leakage_decomposition.py # is the gap leakage, or are singletons hard?
 python src/11_facts.py               # docs/facts.json + README headline table
 python src/12_methods_doc.py         # docs/METHODS.md, generated from the tables
 python src/13_figure_docking.py      # figure 3, from the docking join
+python src/22_figure_leakage.py      # figure 5, from the leakage table
 python src/17_hinglish_pdf.py         # plain-language explainer PDF (Hinglish)
 python src/15_check_consistency.py    # assert docs and tables state the same numbers
 python src/16_check_figures.py       # assert no text collisions / clipped labels
 python src/18_check_reproducibility.py # re-train and bound the cross-version metric drift
+python src/19_figure_reproducibility.py # figure 4, from the drift table
+# src/20_version_attribution.py attributes the drift to python vs xgboost. It needs three
+# separate conda environments, so it is not part of the default run; see README.
+
 python src/14_package.py             # distributable archive
