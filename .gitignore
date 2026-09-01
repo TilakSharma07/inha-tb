@@ -12,5 +12,4 @@ structures/*.pdb
 update_repo.sh
 push_determinism.sh
 push_step17.sh
-data/reproducibility_drift.csv
 push_repro.sh

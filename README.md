@@ -189,7 +189,7 @@ gap is supported, not proven.
 
 ```bash
 conda env create -f environment.yml && conda activate inha-tb
-./run_all.sh                        # the whole chain, steps 1-13
+./run_all.sh                        # the whole chain, steps 1-22 (docking is the slow part)
 ```
 
 Individual steps:
