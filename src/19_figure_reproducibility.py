@@ -33,6 +33,21 @@ def main():
         sys.exit(f"{SRC.relative_to(D)} missing - run src/18_check_reproducibility.py first")
     m = pd.read_csv(SRC)
 
+    # Panel (a) claims "the re-run lands on the committed numbers". That is only a claim
+    # about reproducibility if the reference WAS the committed numbers. If src/18 fell
+    # back to the working tree, step 04 had already overwritten it and the drift is
+    # 0.000 by construction - drawing it would assert bit-reproducibility that was
+    # never tested. Refuse rather than publish a figure that cannot be false.
+    if "reference_source" not in m.columns:
+        sys.exit(f"{SRC.relative_to(D)} has no reference_source column - regenerate it with "
+                 "the current src/18_check_reproducibility.py")
+    srcs = sorted(set(m["reference_source"].astype(str)))
+    if srcs != ["HEAD"]:
+        sys.exit(f"refusing to plot: drift table was built against {srcs}, not the committed "
+                 "tables at HEAD. A working-tree reference compares step 04's output against "
+                 "itself, so the drift is zero by construction. Re-run src/18 in a git "
+                 "checkout.")
+
     plt.rcParams.update({
         "font.size": 8, "axes.titlesize": 8, "axes.labelsize": 8,
         "xtick.labelsize": 6, "ytick.labelsize": 6, "legend.fontsize": 7,

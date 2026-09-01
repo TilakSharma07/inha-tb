@@ -131,6 +131,39 @@ def facts():
             f["leakage"][f"{r.dataset}_{r.group}_auc"] = round(float(r.roc_auc), 2)
             f["leakage"][f"{r.dataset}_{r.group}_n"] = int(r.n)
 
+    va = f"{D}/data/version_attribution.csv"
+    if os.path.exists(va):
+        # The README's version-drift bounds were prose only: no facts.json key covered
+        # them, so step 15 could not check them and they were free to go stale. They are
+        # the worst PAIRWISE drift across the three environments, not the endpoint
+        # difference - drift is not monotonic in version distance, so an endpoint
+        # comparison understates it (python 3.11->3.13 alone moves MCC further than the
+        # full jump does).
+        # These are BOUNDS ("up to x"), so they round UP, not to nearest: the observed
+        # PR-AUC spread is 0.01427 and the README says 0.015. round(...,3) would print
+        # 0.014 and make a correct README look wrong - i.e. the naive convention would
+        # have this gate fail on an honest document. Ceiling at 3 dp throughout.
+        import math
+
+        def bound(x):
+            return math.ceil(float(x) * 1000) / 1000
+
+        V = pd.read_csv(va)
+        key = ["dataset", "split", "model"]
+        xg = V[V.model == "XGBoost"]
+        f["version_drift"] = {"environments": sorted(V.env.unique())}
+        for c in ["ROC_AUC", "PR_AUC", "MCC", "BalAcc", "EF5"]:
+            w = xg.pivot_table(index=key, columns="env", values=c)
+            f["version_drift"][f"xgboost_{c}"] = bound((w.max(axis=1) - w.min(axis=1)).max())
+        # python-only vs full jump: the README claims the drift is not monotonic in
+        # version distance, so both halves of that comparison have to be checkable.
+        w = xg.pivot_table(index=key, columns="env", values="MCC")
+        if {"py311-xgb320", "py313-xgb320", "py313-xgb341"} <= set(w.columns):
+            f["version_drift"]["mcc_python_only"] = bound(
+                (w["py313-xgb320"] - w["py311-xgb320"]).abs().max())
+            f["version_drift"]["mcc_endpoint"] = bound(
+                (w["py313-xgb341"] - w["py311-xgb320"]).abs().max())
+
     f["descriptors_n"] = len(SP["descriptor_cols"])
     f["fingerprint"] = f"Morgan r={SP['radius']}, {SP['nbits']} bits"
     return f

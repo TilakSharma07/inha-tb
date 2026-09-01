@@ -98,13 +98,59 @@ def main():
     elif not (m and n):
         bad.append("AD range sentence not found in one of the documents")
 
-    for b in bad:
-        print(f"FAIL  {b}")
     # The README must keep saying the effect is not significant while facts.json says the
     # direction is consistent; those two must not drift apart into an overclaim.
     if not re.search(r"not significant at the\s+\**conventional threshold",
                      R.replace("**", "")):
         bad.append("README no longer states the leakage effect is not significant")
+
+    # Version-drift bounds. These were prose-only: no facts.json key covered them, so
+    # nothing stopped them going stale while data/version_attribution.csv moved
+    # underneath. They are the worst PAIRWISE spread across environments, and they round
+    # UP, being bounds - see the note in src/11_facts.py.
+    vd = F.get("version_drift")
+    if vd:
+        for label, pat, keys in [
+            ("drift ROC-AUC/PR-AUC", rf"XGBoost ROC-AUC, PR-AUC \| up to {N} / {N}\.",
+             ("xgboost_ROC_AUC", "xgboost_PR_AUC")),
+            ("drift MCC/BalAcc", rf"XGBoost MCC, balanced accuracy \| up to {N} / {N}\.",
+             ("xgboost_MCC", "xgboost_BalAcc")),
+        ]:
+            m = re.search(pat, R)
+            if not m:
+                bad.append(f"{label}: sentence not found in README")
+                continue
+            want = tuple(f"{vd[k]:.3f}" for k in keys)
+            if m.groups() != want:
+                bad.append(f"{label}: README {m.groups()} vs facts.json {want}")
+        m = re.search(rf"EF5 \| up to {N},", R)
+        if not m:
+            bad.append("drift EF5: sentence not found in README")
+        elif m.group(1) != f"{vd['xgboost_EF5']:.3f}":
+            bad.append(f"drift EF5: README {m.group(1)} vs facts.json "
+                       f"{vd['xgboost_EF5']:.3f}")
+        # Non-monotonicity: the README claims python-only drift EXCEEDS the endpoint
+        # jump. Check both numbers and the inequality - if a re-measurement reversed it,
+        # the numbers could each still match while the sentence became false.
+        m = re.search(rf"moves MCC further\s+\({N}\) than the full jump to newer xgboost\s+"
+                      rf"and numpy does \({N}\)", R)
+        if not m:
+            bad.append("drift non-monotonicity: sentence not found in README")
+        else:
+            want = (f"{vd['mcc_python_only']:.3f}", f"{vd['mcc_endpoint']:.3f}")
+            if m.groups() != want:
+                bad.append(f"drift non-monotonicity: README {m.groups()} vs "
+                           f"facts.json {want}")
+            elif vd["mcc_python_only"] <= vd["mcc_endpoint"]:
+                bad.append("drift non-monotonicity: README claims python-only drift "
+                           f"exceeds the endpoint jump, but {vd['mcc_python_only']} <= "
+                           f"{vd['mcc_endpoint']}")
+
+    # Printed last, after every check has appended. An earlier position silently hid the
+    # failures appended below it: they still set the exit code, with nothing on stdout
+    # saying which check failed.
+    for b in bad:
+        print(f"FAIL  {b}")
 
     if bad:
         sys.exit(f"{len(bad)} consistency failure(s)")

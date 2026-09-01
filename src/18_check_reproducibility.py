@@ -86,13 +86,49 @@ def versions():
             "xgboost": xgboost.__version__}
 
 
+def committed(relpath):
+    """Return the committed (HEAD) bytes of a tracked file, or None.
+
+    The reference for this check has to be the metrics that were committed, not the
+    ones sitting in the working tree: run_all.sh runs step 04 before step 18, so step
+    04 overwrites data/metrics.csv with output from THIS interpreter. Reading the
+    working tree there makes the check compare the re-run against itself - it reports
+    'identical' for every model and can never fail. Measured on xgboost 3.2.0 -> 3.4.1:
+    working-tree reference reported 0.000 drift where the committed reference reported
+    ROC_AUC 0.0099 / EF5 0.376.
+    """
+    try:
+        r = subprocess.run(["git", "show", f"HEAD:{relpath}"], cwd=str(D),
+                           capture_output=True, timeout=30)
+    except (OSError, subprocess.SubprocessError):
+        return None
+    return r.stdout if r.returncode == 0 and r.stdout else None
+
+
 def main():
-    ref_path = D / "data" / "metrics.csv"
-    if not ref_path.exists():
-        sys.exit("data/metrics.csv missing - run src/04_train_qsar.py first")
-    ref = pd.read_csv(ref_path)
-    sp_ref = D / "data" / "splits.json"
-    split_ref = json.load(open(sp_ref))["splits"] if sp_ref.exists() else None
+    import io
+
+    # Reference = the committed tables. Fall back to the working tree only if this is
+    # not a git checkout, and say so, because that fallback weakens the check.
+    ref_src = "HEAD"
+    blob = committed("data/metrics.csv")
+    if blob is not None:
+        ref = pd.read_csv(io.BytesIO(blob))
+    else:
+        ref_path = D / "data" / "metrics.csv"
+        if not ref_path.exists():
+            sys.exit("data/metrics.csv missing - run src/04_train_qsar.py first")
+        ref = pd.read_csv(ref_path)
+        ref_src = "working tree"
+
+    sp_blob = committed("data/splits.json")
+    if sp_blob is not None:
+        split_ref = json.loads(sp_blob)["splits"]
+    else:
+        sp_ref = D / "data" / "splits.json"
+        split_ref = json.load(open(sp_ref))["splits"] if sp_ref.exists() else None
+        if ref_src == "HEAD":
+            ref_src = "HEAD (metrics) + working tree (splits)"
 
     with tempfile.TemporaryDirectory(prefix="inha-repro-") as tmp:
         W = Path(tmp) / "repo"
@@ -117,13 +153,23 @@ def main():
     key = ["dataset", "split", "model"]
     m = ref.merge(now, on=key, suffixes=("_ref", "_now"))
     # persist the comparison so src/19 can draw it from a table rather than from
-    # a re-run - the repo's convention is that figures come from saved tables
+    # a re-run - the repo's convention is that figures come from saved tables.
+    # Stamp WHICH reference produced it: a table built against the working tree is
+    # a comparison of a re-run against itself (all-zero drift), and figure 4 drawn
+    # from such a table is a false claim of bit-reproducibility. src/19 refuses it.
+    m["reference_source"] = ref_src
     m.to_csv(D / "data" / "reproducibility_drift.csv", index=False)
     if len(m) != len(ref):
         sys.exit(f"row mismatch: {len(m)} matched of {len(ref)} - the model grid changed")
 
     obs = versions()
     print(f"reproducibility: {json.dumps(obs)}")
+    if ref_src == "HEAD":
+        print("  reference: committed tables at HEAD (not the working tree, which step 04 "
+              "overwrites)")
+    else:
+        print(f"  WEAKENED: reference read from the {ref_src} - if step 04 ran in this "
+              "interpreter the comparison is partly against itself")
     lock, diff = reference_status(obs)
     if lock is None:
         print("  environment.lock.json missing - cannot say whether this is the reference env")

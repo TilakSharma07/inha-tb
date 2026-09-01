@@ -232,6 +232,20 @@
   "Mtb_whole_cell_random_test_has_analogues_auc": 0.93,
   "Mtb_whole_cell_random_test_has_analogues_n": 209
  },
+ "version_drift": {
+  "environments": [
+   "py311-xgb320",
+   "py313-xgb320",
+   "py313-xgb341"
+  ],
+  "xgboost_ROC_AUC": 0.01,
+  "xgboost_PR_AUC": 0.015,
+  "xgboost_MCC": 0.047,
+  "xgboost_BalAcc": 0.024,
+  "xgboost_EF5": 0.753,
+  "mcc_python_only": 0.047,
+  "mcc_endpoint": 0.028
+ },
  "descriptors_n": 17,
  "fingerprint": "Morgan r=2, 2048 bits"
 }
