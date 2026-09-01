@@ -10,6 +10,8 @@ dependencies:
   - rdkit
   - openbabel
   - requests
+  - reportlab
+  - pillow
   - pip
   - pip:
       - vina

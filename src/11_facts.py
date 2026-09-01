@@ -14,6 +14,7 @@ from scipy import stats
 D = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 START, END = "<!-- FACTS:START -->", "<!-- FACTS:END -->"
 AD_START, AD_END = "<!-- AD:START -->", "<!-- AD:END -->"
+FIG_START, FIG_END = "<!-- FIGURES:START -->", "<!-- FIGURES:END -->"
 
 
 def facts():
@@ -155,6 +156,35 @@ def headline_md(f):
     return "\n".join(md)
 
 
+def figures_md(f):
+    """Embed the figure set. Captions carry the number, not just the title, so the
+    landing page states a result even if the reader never opens the figure."""
+    dk, q = f["docking"], f["qsar"]
+    ie, wc = q["InhA_enzyme"], q["Mtb_whole_cell"]
+    figs = [
+        ("figures/fig1_data_and_target.png", "Dataset and target",
+         f"Curated bioactivity landscape ({f['records_curated']:,} records → "
+         f"{f['molecules_unique']:,} unique molecules), enzyme→whole-cell potency "
+         f"translation (Spearman ρ = {f['translation']['spearman_rho']:.2f}), and the "
+         f"InhA binding site used for docking."),
+        ("figures/fig2_qsar_validation.png", "QSAR validation",
+         f"Scaffold-split performance ({ie['best_model']} {ie['scaffold_roc_auc']:.2f} on "
+         f"InhA, {wc['best_model']} {wc['scaffold_roc_auc']:.2f} whole-cell), the "
+         f"random-split inflation gap, and accuracy as a function of chemical distance."),
+        ("figures/fig3_docking.png", "Docking screen",
+         f"Score distributions, score vs. measured potency, ROC, and the head-to-head on "
+         f"held-out molecules: docking "
+         f"{dk['InhA_enzyme_heldout_dock_auc']:.2f}/"
+         f"{dk['Mtb_whole_cell_heldout_dock_auc']:.2f} vs. QSAR "
+         f"{dk['InhA_enzyme_heldout_qsar_auc']:.2f}/"
+         f"{dk['Mtb_whole_cell_heldout_qsar_auc']:.2f} ROC-AUC."),
+    ]
+    md = []
+    for path, title, cap in figs:
+        md += [f"### {title}", "", f"![{title}]({path})", "", f"*{cap}*", ""]
+    return "\n".join(md).rstrip()
+
+
 def ad_md(f):
     ad = f["applicability_domain"]
     near, far = ad["near_roc_auc"], ad["far_roc_auc"]
@@ -187,6 +217,7 @@ def main():
     rd = f"{D}/README.md"
     inject(rd, START, END, headline_md(f), "README headline table")
     inject(rd, AD_START, AD_END, ad_md(f), "README applicability-domain bullet")
+    inject(rd, FIG_START, FIG_END, figures_md(f), "README figure gallery")
     print(json.dumps({k: v for k, v in f.items()
                       if k not in ("cascade", "applicability_domain", "qsar")}, indent=1))
 

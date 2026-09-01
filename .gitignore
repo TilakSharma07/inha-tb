@@ -9,3 +9,4 @@ data/chembl_raw.json          # 6.6 MB; the gzipped copy is committed instead
 structures/*.pdb
 !structures/4TZK.pdb          # receptor input to src/05
 *.log
+update_repo.sh

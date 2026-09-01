@@ -39,7 +39,8 @@ def main():
             tf.add(os.path.join(D, rel), arcname=f"inha-tb/{rel}")
     mb = os.path.getsize(out) / 1048576
     print(f"wrote {os.path.normpath(out)} - {len(files)} files, {mb:.1f} MB")
-    for must in ("data/chembl_raw.json.gz", KEEP_STRUCT, "run_all.sh", "README.md"):
+    for must in ("data/chembl_raw.json.gz", KEEP_STRUCT, "run_all.sh", "README.md",
+                 "docs/METHODS.md", "docs/PROJECT_EXPLAINER_hinglish.pdf"):
         assert must in files, f"missing from archive: {must}"
     print("manifest check: required files present")
 

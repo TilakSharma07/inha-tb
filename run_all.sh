@@ -19,6 +19,7 @@ python src/10_figures.py             # regenerate figures 1-2 from saved tables
 python src/11_facts.py               # docs/facts.json + README headline table
 python src/12_methods_doc.py         # docs/METHODS.md, generated from the tables
 python src/13_figure_docking.py      # figure 3, from the docking join
+python src/17_hinglish_pdf.py         # plain-language explainer PDF (Hinglish)
 python src/15_check_consistency.py    # assert docs and tables state the same numbers
 python src/16_check_figures.py       # assert no text collisions / clipped labels
 python src/14_package.py             # distributable archive
