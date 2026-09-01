@@ -376,8 +376,11 @@ def build():
         canvas.drawRightString(A4[0] - 22 * mm, 12 * mm, f"{doc.page}")
         canvas.restoreState()
 
+    # invariant=1 fixes /CreationDate, /ModDate and the document /ID, which otherwise
+    # change on every run. Without it the 1.1 MB PDF shows up as a spurious diff after
+    # each run_all.sh, and git stores a whole new blob for a logically unchanged file.
     doc = SimpleDocTemplate(
-        OUT, pagesize=A4,
+        OUT, pagesize=A4, invariant=1,
         leftMargin=22 * mm, rightMargin=22 * mm,
         topMargin=18 * mm, bottomMargin=20 * mm,
         title="InhA-TB - project explainer (Hinglish)",
