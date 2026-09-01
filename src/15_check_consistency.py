@@ -25,6 +25,15 @@ def main():
         ("redock RMSD / README",   R, rf"\*\*{N} Å\*\* RMSD",             f"{dk['rmsd_top']:.2f}"),
         ("redock RMSD / METHODS",  M, rf"\*\*RMSD, top-ranked pose\*\* \| \*\*{N} Å",
                                                                           f"{dk['rmsd_top']:.2f}"),
+        # Method-section library breakdown. These were stale (539/344/195/348 against
+        # a 647-molecule library) and no check covered them, so the README contradicted
+        # its own headline table. Any prose number that restates a saved value is checked.
+        ("library total / Method",  R, rf"Library: {N} molecules",        f"{dk['library_n']}"),
+        ("library InhA / Method",   R, rf"\({N} with InhA enzyme",        f"{dk['library_inha']}"),
+        ("library WC / Method",     R, rf"enzyme potency, {N}\n",         f"{dk['library_wc']}"),
+        ("library actives / Method", R, rf"of which {N} are measured",     f"{dk['library_actives']}"),
+        ("excluded / Method",       R, rf"{N} molecules were excluded",    f"{dk['n_excluded']}"),
+        ("scored / Method",         R, rf"{N} of the [\d,]+ returned",     f"{dk['n_scored']}"),
         ("library / README",       R, rf"Compounds in the docking library \| {N}",
                                                                           f"{dk['library_n']:,}"),
         ("library / METHODS",      M, rf"Library: {N} molecules",          f"{dk['library_n']:,}"),
