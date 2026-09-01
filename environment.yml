@@ -1,13 +1,15 @@
 name: inha-tb
 channels: [conda-forge, bioconda]
+# Minor-version pins on everything that touches a reported number. Exact versions
+# that produced the committed tables are in environment.lock.json.
 dependencies:
-  - python=3.11
-  - numpy
-  - pandas
-  - scipy
-  - scikit-learn
+  - python=3.11.*
+  - numpy=2.4.*
+  - pandas=3.0.*
+  - scipy=1.17.*
+  - scikit-learn=1.9.*
   - matplotlib
-  - rdkit
+  - rdkit=2026.03.*
   - openbabel
   - requests
   - reportlab
@@ -16,6 +18,6 @@ dependencies:
   - pip:
       - vina
       - meeko
-      - xgboost
+      - xgboost==3.2.*
       - prolif
       - MDAnalysis

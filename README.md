@@ -151,6 +151,60 @@ python src/12_methods_doc.py        # regenerate docs/METHODS.md from the same t
 python src/13_figure_docking.py     # figure 3, from the docking join
 ```
 
+### What reproduces, and what drifts
+
+![Reproducibility](figures/fig4_reproducibility.png)
+
+**(a)** The random-split ROC-AUC exceeds the scaffold-split ROC-AUC for every model on
+both datasets, in the committed tables and on a re-run under newer libraries; only the
+XGBoost points move at all. **(b)** XGBoost drift attributed to each factor, measured on
+three interpreters (`src/20_version_attribution.py`). Changing python alone moves MCC by
+0.047; changing xgboost and numpy alone moves it by the same amount; changing both moves it
+by only 0.028, because the two effects partly cancel. **A single re-run therefore does not
+bound the drift** - the endpoint comparison a reviewer would make is not the worst case.
+Random forest and logistic regression are bit-identical in all three environments. Held-out
+sets are n = 88 (InhA enzyme) and n = 274 (whole-cell).
+
+The exact versions that produced the committed tables are recorded in
+`environment.lock.json`; `environment.yml` now pins every library that touches a reported
+number to its minor version. `src/18_check_reproducibility.py` re-trains from the committed
+data in a temporary copy, says whether you are on the reference versions, and bounds the
+difference. Measured across three interpreters (python 3.11.16 / 3.13, xgboost 3.2.0 /
+3.4.1 - see `src/20_version_attribution.py`):
+
+| component | behaviour on a re-run |
+|---|---|
+| scaffold and random splits | invariant in **membership**, not just in size - the Bemis-Murcko split sorts by group size then name, so it is deterministic by construction, not by seed. `data/splits.json` is byte-identical across all three environments |
+| fingerprints, descriptors | `data/fp_matrix.npy` bitwise identical; descriptors agree to 2e-16 |
+| random forest, logistic regression | bit-identical in all three environments |
+| XGBoost ROC-AUC, PR-AUC | up to 0.010 / 0.015. Gated at 0.02 |
+| XGBoost MCC, balanced accuracy | up to 0.047 / 0.024. These threshold the probability at 0.5, so a shift of ~1e-3 in one prediction relabels a molecule and moves the metric by ~1/n_test. Reported, and gated only at 0.10 |
+| EF5 | up to 0.753, and not gated - at n_test = 88 the top 5% is 4 molecules, so a single rank change moves EF5 by ~0.35 |
+
+Two caveats on those bounds, both found by measuring rather than assuming. First, the drift
+is **not monotonic in version distance**: python 3.11 -> 3.13 alone moves MCC further
+(0.047) than the full jump to newer xgboost and numpy does (0.028). Bounds taken from a
+single re-run understate the worst case, so the table above is the worst pairwise drift
+across the three environments, not the endpoint difference. Second, python itself - not
+xgboost - is the largest single contributor, which is why the pins in `environment.yml`
+include the interpreter.
+
+Two headline figures move by 0.01 in the third decimal and would round differently
+(InhA XGBoost scaffold 0.837 -> 0.834, random 0.921 -> 0.931); the two random-forest
+headline numbers do not move at all. The head-to-head docking comparison is unaffected,
+because `src/09_analyse_docking.py` uses the random forest.
+
+The claim this repo is built on survives the drift: scaffold-split ROC-AUC stays below
+random-split ROC-AUC in all six model x dataset combinations, and the inflation range is
+0.07-0.12 in both the committed and the regenerated tables. The check exits non-zero if
+that ordering ever breaks - which is the failure that would actually matter.
+
+`environment.yml` pins to minor versions rather than exact builds: exact pins would freeze
+the numbers but make the environment unsolvable within a year or two. Minor pins hold the
+numbers where they were measured, `environment.lock.json` records the exact reference, and
+bounding the residual drift while gating the claim covers the rest,
+and it is what the check does.
+
 ## Layout
 
 ```

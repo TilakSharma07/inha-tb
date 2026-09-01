@@ -1,0 +1,10 @@
+{
+  "_comment": "Exact versions that produced the committed data/*.csv and docs/facts.json. src/18_check_reproducibility.py compares the running interpreter against this and reports whether you are in-reference. Measured, not aspirational.",
+  "python": "3.11.16",
+  "numpy": "2.4.6",
+  "scipy": "1.17.1",
+  "scikit-learn": "1.9.0",
+  "xgboost": "3.2.0",
+  "rdkit": "2026.03.5",
+  "pandas": "3.0.5"
+}

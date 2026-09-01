@@ -22,4 +22,5 @@ python src/13_figure_docking.py      # figure 3, from the docking join
 python src/17_hinglish_pdf.py         # plain-language explainer PDF (Hinglish)
 python src/15_check_consistency.py    # assert docs and tables state the same numbers
 python src/16_check_figures.py       # assert no text collisions / clipped labels
+python src/18_check_reproducibility.py # re-train and bound the cross-version metric drift
 python src/14_package.py             # distributable archive
