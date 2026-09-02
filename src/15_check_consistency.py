@@ -146,6 +146,42 @@ def main():
                            f"exceeds the endpoint jump, but {vd['mcc_python_only']} <= "
                            f"{vd['mcc_endpoint']}")
 
+    # The CSV-parser perturbation is the evidence that the interpreter effect is not
+    # generic small-number amplification. Three numbers carry that argument and all three
+    # can go stale independently, so check each against facts.json - and check the
+    # inequality too: the argument only holds while the perturbation the model tolerates
+    # is LARGER than the QED drift it does not.
+    cp = F.get("csv_parser")
+    if cp:
+        m = re.search(rf"changes {N} cells of the model input matrix", R)
+        if not m:
+            bad.append("csv parser cells: sentence not found in README")
+        elif m.group(1).replace(",", "") != str(cp["cells_perturbed"]):
+            bad.append(f"csv parser cells: README {m.group(1)} vs facts.json "
+                       f"{cp['cells_perturbed']}")
+        n_cols = len(cp["columns_perturbed"])
+        words = {1: "one", 2: "two", 3: "three", 4: "four", 5: "five", 6: "six",
+                 7: "seven", 8: "eight", 9: "nine", 10: "ten"}
+        if not re.search(rf"across {words.get(n_cols, n_cols)} of the seventeen\s+descriptor columns", R):
+            bad.append(f"csv parser columns: README does not say "
+                       f"'{words.get(n_cols, n_cols)} of the seventeen'")
+        for c in cp["columns_perturbed"]:
+            if f"`{c}`" not in R:
+                bad.append(f"csv parser columns: {c} perturbed but not named in README")
+        m = re.search(rf"up to {N}e-13\s+absolute", R)
+        if not m:
+            bad.append("csv parser magnitude: sentence not found in README")
+        elif m.group(1) != f"{cp['max_abs_e13']:g}":
+            bad.append(f"csv parser magnitude: README {m.group(1)}e-13 vs facts.json "
+                       f"{cp['max_abs_e13']:g}e-13")
+        if "vs_interpreter_drift" in cp:
+            m = re.search(rf"against\s+the {N} the interpreter change produces", R)
+            if not m:
+                bad.append("csv parser comparison: sentence not found in README")
+            elif m.group(1) != f"{cp['vs_interpreter_drift']:.3f}":
+                bad.append(f"csv parser comparison: README {m.group(1)} vs facts.json "
+                           f"{cp['vs_interpreter_drift']:.3f}")
+
     # Printed last, after every check has appended. An earlier position silently hid the
     # failures appended below it: they still set the exit code, with nothing on stdout
     # saying which check failed.
@@ -154,8 +190,13 @@ def main():
 
     if bad:
         sys.exit(f"{len(bad)} consistency failure(s)")
-    print(f"consistency: {len(checks)} headline numbers agree across README, "
-          f"METHODS.md and facts.json")
+    # len(checks) counts only the tabulated number-vs-fact pairs. The prose claims
+    # checked imperatively below that loop (leakage wording, version-drift bounds and
+    # their non-monotonicity, the CSV-parser perturbation) are verified but not counted,
+    # so this line must not present the number as the total - it read as one until a
+    # mutation test showed the count unchanged after three new checks were added.
+    print(f"consistency: {len(checks)} tabulated numbers agree across README, "
+          f"METHODS.md and facts.json, plus the prose claims checked below them")
 
 
 if __name__ == "__main__":

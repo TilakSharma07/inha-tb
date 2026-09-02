@@ -164,6 +164,39 @@ def facts():
             f["version_drift"]["mcc_endpoint"] = bound(
                 (w["py313-xgb341"] - w["py311-xgb320"]).abs().max())
 
+    # The README claims the boosted tree is stable under a 4.5e-13 perturbation of its
+    # inputs but not across interpreters. That is the load-bearing evidence that the
+    # interpreter effect is not generic small-number amplification, so it has to be
+    # recomputed here rather than left as prose: pandas' default float parser does not
+    # round-trip what to_csv wrote, and the gap it opens IS the perturbation.
+    feats = f"{D}/data/features.csv"
+    if os.path.exists(feats):
+        import math
+
+        a = pd.read_csv(feats)
+        b = pd.read_csv(feats, float_precision="round_trip")
+        dc = [c for c in SP["descriptor_cols"] if c in a.columns]
+        Xa, Xb = a[dc].to_numpy(float), b[dc].to_numpy(float)
+        f["csv_parser"] = {
+            "cells_perturbed": int((Xa != Xb).sum()),
+            "columns_perturbed": sorted(c for c in dc
+                                        if (a[c].to_numpy(float) != b[c].to_numpy(float)).any()),
+            # Also an upper bound, and reported in the README to one significant figure,
+            # so ceiling rather than round - same convention as version_drift above.
+            "max_abs_e13": math.ceil(float(np.abs(Xa - Xb).max()) * 1e14) / 10,
+        }
+        # The perturbation argument is a comparison, so the thing it is compared AGAINST
+        # has to be gated too. Unlike the bounds above this is a reported measurement
+        # ("the 0.376 the interpreter change produces"), not an upper bound, so it rounds
+        # to nearest - ceiling here would print 0.377 and fail an honest README.
+        rd = f"{D}/data/reproducibility_drift.csv"
+        if os.path.exists(rd):
+            m = pd.read_csv(rd)
+            mets = [c[:-4] for c in m.columns if c.endswith("_ref")]
+            if mets:
+                f["csv_parser"]["vs_interpreter_drift"] = round(
+                    max(float((m[f"{c}_now"] - m[f"{c}_ref"]).abs().max()) for c in mets), 3)
+
     f["descriptors_n"] = len(SP["descriptor_cols"])
     f["fingerprint"] = f"Morgan r={SP['radius']}, {SP['nbits']} bits"
     return f

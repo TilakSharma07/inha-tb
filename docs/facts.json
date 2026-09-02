@@ -246,6 +246,19 @@
   "mcc_python_only": 0.047,
   "mcc_endpoint": 0.028
  },
+ "csv_parser": {
+  "cells_perturbed": 1678,
+  "columns_perturbed": [
+   "BertzCT",
+   "FracCsp3",
+   "MW",
+   "QED",
+   "TPSA",
+   "cLogP"
+  ],
+  "max_abs_e13": 4.6,
+  "vs_interpreter_drift": 0.376
+ },
  "descriptors_n": 17,
  "fingerprint": "Morgan r=2, 2048 bits"
 }

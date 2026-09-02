@@ -261,6 +261,20 @@ descriptor is what a boosted tree amplifies into the numbers in this table. Pinn
 `rdkit` at the version level does not prevent it - all three environments here ran
 rdkit 2026.03.5.
 
+The amplification is not a general sensitivity to small perturbations, and the
+distinction matters for anyone trying to reproduce this. `pandas.read_csv` defaults to a
+fast float parser that does not round-trip the full-precision values written by
+`to_csv`: reading the committed `data/features.csv` with `float_precision="round_trip"`
+instead changes 1,678 cells of the model input matrix across six of the seventeen
+descriptor columns (`BertzCT`, `MW`, `TPSA`, `cLogP`, `FracCsp3`, `QED`; up to 4.6e-13
+absolute, three orders of magnitude larger than the `QED` drift above). Re-training on the
+round-tripped matrix reproduces `data/metrics.csv` exactly - worst drift 0.000000 against
+the 0.376 the interpreter change produces. So the boosted tree is stable under a 4.6e-13
+perturbation of its inputs but not across interpreters, which means the interpreter
+effect is not simply "small numbers get amplified"; the split boundaries land differently
+for a reason the input perturbation alone does not reproduce. The pins, not a tolerance,
+are what make this reproducible.
+
 Two headline figures move by 0.01 in the third decimal and would round differently
 (InhA XGBoost scaffold 0.837 -> 0.834, random 0.921 -> 0.931); the two random-forest
 headline numbers do not move at all. The head-to-head docking comparison is unaffected,
