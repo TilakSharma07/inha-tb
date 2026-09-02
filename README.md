@@ -242,7 +242,7 @@ difference. Measured across three interpreters (python 3.11.16 / 3.13, xgboost 3
 | component | behaviour on a re-run |
 |---|---|
 | scaffold and random splits | invariant in **membership**, not just in size - the Bemis-Murcko split sorts by group size then name, so it is deterministic by construction, not by seed. `data/splits.json` is byte-identical across all three environments |
-| fingerprints, descriptors | `data/fp_matrix.npy` bitwise identical; descriptors agree to 2e-16 |
+| fingerprints, descriptors | `data/fp_matrix.npy` bitwise identical. Descriptors agree to 2e-16, but not exactly: `QED` moves in 173 of 1,452 rows (max 1.7e-16 absolute) under an unchanged rdkit 2026.03.5 on a different CPython. It is a model feature, so this is the entry point for everything below — hold `data/features.csv` fixed and re-running the training step reproduces `data/metrics.csv` byte-for-byte |
 | random forest, logistic regression | bit-identical in all three environments |
 | XGBoost ROC-AUC, PR-AUC | up to 0.010 / 0.015. Gated at 0.02 |
 | XGBoost MCC, balanced accuracy | up to 0.047 / 0.024. These threshold the probability at 0.5, so a shift of ~1e-3 in one prediction relabels a molecule and moves the metric by ~1/n_test. Reported, and gated only at 0.10 |
@@ -254,7 +254,12 @@ is **not monotonic in version distance**: python 3.11 -> 3.13 alone moves MCC fu
 single re-run understate the worst case, so the table above is the worst pairwise drift
 across the three environments, not the endpoint difference. Second, python itself - not
 xgboost - is the largest single contributor, which is why the pins in `environment.yml`
-include the interpreter.
+include the interpreter. The mechanism is the `QED` drift above rather than anything in
+xgboost itself: holding the committed `data/features.csv` fixed and varying only the
+interpreter and xgboost reproduces every metric exactly, so a last-bit change in one
+descriptor is what a boosted tree amplifies into the numbers in this table. Pinning
+`rdkit` at the version level does not prevent it - all three environments here ran
+rdkit 2026.03.5.
 
 Two headline figures move by 0.01 in the third decimal and would round differently
 (InhA XGBoost scaffold 0.837 -> 0.834, random 0.921 -> 0.931); the two random-forest

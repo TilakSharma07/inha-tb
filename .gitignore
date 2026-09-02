@@ -14,3 +14,4 @@ push_determinism.sh
 push_step17.sh
 push_repro.sh
 github_check.sh
+verify_gates.sh
