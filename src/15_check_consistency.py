@@ -174,13 +174,17 @@ def main():
         elif m.group(1) != f"{cp['max_abs_e13']:g}":
             bad.append(f"csv parser magnitude: README {m.group(1)}e-13 vs facts.json "
                        f"{cp['max_abs_e13']:g}e-13")
-        if "vs_interpreter_drift" in cp:
-            m = re.search(rf"against\s+the {N} the interpreter change produces", R)
+        # The comparison figure must come from version_drift (a 3-environment bound over
+        # version_attribution.csv), not from reproducibility_drift.csv - that one is
+        # rewritten by step 18 on every run and its max is EF5, which moves ~0.35 on a
+        # single rank change. See the note in src/11_facts.py.
+        if vd:
+            m = re.search(rf"against up to {N} in MCC alone", R)
             if not m:
                 bad.append("csv parser comparison: sentence not found in README")
-            elif m.group(1) != f"{cp['vs_interpreter_drift']:.3f}":
+            elif m.group(1) != f"{vd['xgboost_MCC']:.3f}":
                 bad.append(f"csv parser comparison: README {m.group(1)} vs facts.json "
-                           f"{cp['vs_interpreter_drift']:.3f}")
+                           f"{vd['xgboost_MCC']:.3f}")
 
     # Printed last, after every check has appended. An earlier position silently hid the
     # failures appended below it: they still set the exit code, with nothing on stdout

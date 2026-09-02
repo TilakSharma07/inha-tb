@@ -256,8 +256,7 @@
    "TPSA",
    "cLogP"
   ],
-  "max_abs_e13": 4.6,
-  "vs_interpreter_drift": 0.376
+  "max_abs_e13": 4.6
  },
  "descriptors_n": 17,
  "fingerprint": "Morgan r=2, 2048 bits"

@@ -186,16 +186,13 @@ def facts():
             "max_abs_e13": math.ceil(float(np.abs(Xa - Xb).max()) * 1e14) / 10,
         }
         # The perturbation argument is a comparison, so the thing it is compared AGAINST
-        # has to be gated too. Unlike the bounds above this is a reported measurement
-        # ("the 0.376 the interpreter change produces"), not an upper bound, so it rounds
-        # to nearest - ceiling here would print 0.377 and fail an honest README.
-        rd = f"{D}/data/reproducibility_drift.csv"
-        if os.path.exists(rd):
-            m = pd.read_csv(rd)
-            mets = [c[:-4] for c in m.columns if c.endswith("_ref")]
-            if mets:
-                f["csv_parser"]["vs_interpreter_drift"] = round(
-                    max(float((m[f"{c}_now"] - m[f"{c}_ref"]).abs().max()) for c in mets), 3)
+        # has to be gated too - but NOT from data/reproducibility_drift.csv. That table is
+        # rewritten by step 18 on every run_all.sh, so a number taken from it describes
+        # whichever interpreter last ran, not the reference pair (0.376 here, 0.437 on a
+        # python 3.12 machine). Worse, its maximum is EF5, which the table above documents
+        # as moving ~0.35 on a single rank change at n_test = 88. The README now cites
+        # xgboost_MCC from version_drift instead: a 3-environment bound, computed from
+        # data/version_attribution.csv, which run_all.sh does not regenerate.
 
     f["descriptors_n"] = len(SP["descriptor_cols"])
     f["fingerprint"] = f"Morgan r={SP['radius']}, {SP['nbits']} bits"
