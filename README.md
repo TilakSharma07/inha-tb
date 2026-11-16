@@ -170,6 +170,21 @@ gap is supported, not proven.
   which is why only ROC-AUC is quoted from the head-to-head.
 - **Vina score is not affinity.** Empirical scoring functions correlate weakly with measured
   potency. This pipeline claims *prioritisation*, not affinity prediction.
+- **The docking toolchain is not pinned, and the environment that produced the
+  committed docking results no longer exists.** `environment.lock.json` records exact
+  versions for seven packages — python, numpy, scipy, scikit-learn, xgboost, rdkit,
+  pandas — and every one of them belongs to the QSAR half. Open Babel, AutoDock Vina,
+  Meeko, ProLIF and MDAnalysis are unpinned in `environment.yml` and absent from the
+  lockfile, so `src/18_check_reproducibility.py` can report "in-reference" on an
+  environment that would still dock differently. Those five are exactly the tools that
+  set the docking numbers: Vina's scoring function changed between 1.1.x and 1.2.x, so
+  scores and rank order are not comparable across that boundary; Open Babel 2.x and 3.x
+  differ in protonation at pH and in 3D coordinate generation, so the same SMILES enters
+  docking as a different starting geometry; Meeko defines the PDBQT atom typing and
+  rotatable-bond torsion tree, which is what Vina is permitted to move. The QSAR results
+  above are reproducible from the lockfile. The docking results — including the 0.23 A
+  redocking RMSD and the head-to-head comparison — are not, and would need a re-run under
+  a pinned environment to carry the same guarantee.
 <!-- AD:START -->
 - **Accuracy is a function of chemical distance.** Test compounds at Tanimoto similarity >= 0.35 to the training set score ROC-AUC 0.87–0.93; below 0.35 the same model falls to 0.47–0.60 — at, or barely above, chance. Predictions on
   genuinely novel chemotypes are not trustworthy, and Figure 2d shows it rather

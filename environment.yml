@@ -2,6 +2,10 @@ name: inha-tb
 channels: [conda-forge, bioconda]
 # Minor-version pins on everything that touches a reported number. Exact versions
 # that produced the committed tables are in environment.lock.json.
+# Known gap: the docking toolchain (openbabel, vina, meeko, prolif, MDAnalysis) is
+# NOT pinned and is absent from environment.lock.json. The environment that produced
+# the committed docking results is no longer available, so these cannot be pinned
+# retrospectively without guessing. See "Honest limitations" in the README.
 dependencies:
   - python=3.11.*
   - numpy=2.4.*
