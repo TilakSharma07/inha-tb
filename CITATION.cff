@@ -11,6 +11,9 @@ authors:
 repository-code: "https://github.com/TilakSharma07/inha-tb"
 url: "https://tilaksharma07.github.io"
 license: MIT
+version: "1.0.4"
+date-released: "2026-11-26"
+doi: "10.5281/zenodo.24561219"
 keywords:
   - "QSAR"
   - "virtual screening"
