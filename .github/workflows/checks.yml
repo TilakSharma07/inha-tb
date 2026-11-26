@@ -1,0 +1,42 @@
+name: checks
+
+# Split the way the pipeline is split:
+#   consistency     - every push. Pure stdlib, no install, seconds. Fails if any
+#                     number in README.md or docs/METHODS.md disagrees with
+#                     docs/facts.json.
+#   reproducibility - weekly and on demand. Rebuilds the environment and re-trains
+#                     from committed data, gating on the repo's central claim.
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+jobs:
+  consistency:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Documentation numbers match docs/facts.json
+        run: python src/15_check_consistency.py
+
+  reproducibility:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -el {0}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: conda-incubator/setup-miniconda@v3
+        with:
+          environment-file: environment.yml
+          activate-environment: inha-tb
+          miniforge-version: latest
+      - name: Re-train from committed data, gate on the central claim
+        run: python src/18_check_reproducibility.py
